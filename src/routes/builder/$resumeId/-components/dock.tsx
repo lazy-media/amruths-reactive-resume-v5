@@ -1,8 +1,8 @@
 import { t } from "@lingui/core/macro";
 import {
-	ArrowsClockwiseIcon,
 	CircleNotchIcon,
 	CubeFocusIcon,
+	FileJsIcon,
 	FilePdfIcon,
 	type Icon,
 	LinkSimpleIcon,
@@ -16,18 +16,19 @@ import { useCallback, useMemo } from "react";
 import { useControls } from "react-zoom-pan-pinch";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
-import { Button } from "@/components/animate-ui/components/buttons/button";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { authClient } from "@/integrations/auth/client";
 import { orpc } from "@/integrations/orpc/client";
-import { downloadFromUrl, generateFilename } from "@/utils/file";
+import { downloadFromUrl, downloadWithAnchor, generateFilename } from "@/utils/file";
 import { cn } from "@/utils/style";
 
 export function BuilderDock() {
-	const [_, copyToClipboard] = useCopyToClipboard();
 	const { data: session } = authClient.useSession();
 	const params = useParams({ from: "/builder/$resumeId" });
-	const { zoomIn, zoomOut, resetTransform, centerView } = useControls();
+
+	const [_, copyToClipboard] = useCopyToClipboard();
+	const { zoomIn, zoomOut, centerView } = useControls();
 
 	const { data: resume } = useQuery(orpc.resume.getById.queryOptions({ input: { id: params.resumeId } }));
 	const { mutateAsync: printResumeAsPDF, isPending: isPrinting } = useMutation(
@@ -35,28 +36,42 @@ export function BuilderDock() {
 	);
 
 	const publicUrl = useMemo(() => {
-		if (!session || !resume) return "";
+		if (!session?.user.username || !resume?.slug) return "";
 		return `${window.location.origin}/${session.user.username}/${resume.slug}`;
-	}, [session, resume]);
-
-	const onReset = useCallback(() => {
-		resetTransform();
-		centerView();
-	}, [resetTransform, centerView]);
+	}, [session?.user.username, resume?.slug]);
 
 	const onCopyUrl = useCallback(async () => {
 		await copyToClipboard(publicUrl);
 		toast.success(t`A link to your resume has been copied to clipboard.`);
 	}, [publicUrl, copyToClipboard]);
 
+	const onDownloadJSON = useCallback(async () => {
+		if (!resume?.data) return;
+		const filename = generateFilename(resume.data.basics.name, "json");
+		const jsonString = JSON.stringify(resume.data, null, 2);
+		const blob = new Blob([jsonString], { type: "application/json" });
+
+		downloadWithAnchor(blob, filename);
+	}, [resume?.data]);
+
 	const onDownloadPDF = useCallback(async () => {
-		if (!resume) return;
+		if (!resume?.id) return;
 
 		const filename = generateFilename(resume.data.basics.name, "pdf");
-		const { url } = await printResumeAsPDF({ id: resume.id });
+		const toastId = toast.loading(t`Please wait while your PDF is being generated...`, {
+			description: t`This may take a while depending on the server capacity. Please do not close the window or refresh the page.`,
+		});
 
-		downloadFromUrl(url, filename);
-	}, [resume, printResumeAsPDF]);
+		try {
+			const { url } = await printResumeAsPDF({ id: resume.id });
+			downloadFromUrl(url, filename);
+		} catch (error) {
+			toast.error(t`There was a problem while generating the PDF, please try again in some time.`);
+			console.error("[Error from printResumeAsPDF]:", error);
+		} finally {
+			toast.dismiss(toastId);
+		}
+	}, [resume?.id, resume?.data.basics.name, printResumeAsPDF]);
 
 	return (
 		<div className="fixed inset-x-0 bottom-4 flex items-center justify-center">
@@ -69,10 +84,10 @@ export function BuilderDock() {
 			>
 				<DockIcon icon={MagnifyingGlassPlusIcon} title={t`Zoom in`} onClick={() => zoomIn(0.1)} />
 				<DockIcon icon={MagnifyingGlassMinusIcon} title={t`Zoom out`} onClick={() => zoomOut(0.1)} />
-				<DockIcon icon={ArrowsClockwiseIcon} title={t`Reset zoom`} onClick={() => onReset()} />
 				<DockIcon icon={CubeFocusIcon} title={t`Center view`} onClick={() => centerView()} />
 				<div className="mx-1 h-8 w-px bg-border" />
 				<DockIcon icon={LinkSimpleIcon} title={t`Copy URL`} onClick={() => onCopyUrl()} />
+				<DockIcon icon={FileJsIcon} title={t`Download JSON`} onClick={() => onDownloadJSON()} />
 				<DockIcon
 					title={t`Download PDF`}
 					disabled={isPrinting}

@@ -34,7 +34,7 @@
     <a href="https://opencollective.com/reactive-resume"><img src="https://img.shields.io/opencollective/all/reactive-resume?style=flat-square" alt="Open Collective" /></a>
   </p>
 
-  <a href="https://www.producthunt.com/products/reactive-resume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-reactive-resume-v5-2" target="_blank" rel="noopener noreferrer"><img alt="Reactive Resume v5 - A free and open-source resume builder. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1065182&amp;theme=light&amp;t=1768850745585"></a>
+  <a href="https://www.producthunt.com/products/reactive-resume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-reactive-resume-v5-2" target="_blank" rel="noopener"><img alt="Reactive Resume v5 - A free and open-source resume builder. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1065182&amp;theme=light&amp;t=1768850745585"></a>
 </div>
 
 ---
@@ -190,7 +190,7 @@ Comprehensive guides are available at [docs.rxresu.me](https://docs.rxresu.me):
 Reactive Resume can be self-hosted using Docker. The stack includes:
 
 - **PostgreSQL** — Database for storing user data and resumes
-- **Gotenberg** — Headless Chrome service for PDF generation
+- **Printer** — Headless Chromium service for PDF and screenshot generation
 - **SeaweedFS** (optional) — S3-compatible storage for file uploads
 
 Pull the latest image from Docker Hub or GitHub Container Registry:
@@ -224,6 +224,16 @@ Other ways to support:
 - Report bugs and suggest features
 - Improve documentation
 - Help with translations
+
+## Star History
+
+<a href="https://www.star-history.com/#amruthpillai/reactive-resume&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=amruthpillai/reactive-resume&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=amruthpillai/reactive-resume&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=amruthpillai/reactive-resume&type=date&legend=top-left" />
+ </picture>
+</a>
 
 ## Contributing
 

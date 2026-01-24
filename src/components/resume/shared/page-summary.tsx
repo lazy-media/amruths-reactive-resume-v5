@@ -13,13 +13,13 @@ export function PageSummary({ className }: PageSummaryProps) {
 	return (
 		<section
 			className={cn(
-				"page-section page-section-summary wrap-break-word",
+				"page-section page-section-summary",
 				section.hidden && "hidden",
 				section.content === "" && "hidden",
 				className,
 			)}
 		>
-			<h6 className="mb-2 text-(--page-primary-color)">{section.title || getSectionTitle("summary")}</h6>
+			<h6 className="mb-1.5 text-(--page-primary-color)">{section.title || getSectionTitle("summary")}</h6>
 
 			<div className="section-content">
 				<TiptapContent style={{ columnCount: section.columns }} content={section.content} />

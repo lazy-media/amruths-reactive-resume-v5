@@ -1,5 +1,6 @@
 import z from "zod";
-import { resumeDataSchema, sampleResumeData } from "@/schema/resume/data";
+import { resumeDataSchema } from "@/schema/resume/data";
+import { sampleResumeData } from "@/schema/resume/sample";
 import { generateRandomName, slugify } from "@/utils/string";
 import { protectedProcedure, publicProcedure, serverOnlyProcedure } from "../context";
 import { resumeService } from "../services/resume";
@@ -166,6 +167,12 @@ export const resumeRouter = {
 			}),
 		)
 		.output(z.string().describe("The ID of the created resume."))
+		.errors({
+			RESUME_SLUG_ALREADY_EXISTS: {
+				message: "A resume with this slug already exists.",
+				status: 400,
+			},
+		})
 		.handler(async ({ context, input }) => {
 			return await resumeService.create({
 				name: input.name,
@@ -187,6 +194,12 @@ export const resumeRouter = {
 		})
 		.input(z.object({ data: resumeDataSchema }))
 		.output(z.string().describe("The ID of the imported resume."))
+		.errors({
+			RESUME_SLUG_ALREADY_EXISTS: {
+				message: "A resume with this slug already exists.",
+				status: 400,
+			},
+		})
 		.handler(async ({ context, input }) => {
 			const name = generateRandomName();
 			const slug = slugify(name);
@@ -220,6 +233,12 @@ export const resumeRouter = {
 			}),
 		)
 		.output(z.void())
+		.errors({
+			RESUME_SLUG_ALREADY_EXISTS: {
+				message: "A resume with this slug already exists.",
+				status: 400,
+			},
+		})
 		.handler(async ({ context, input }) => {
 			return await resumeService.update({
 				id: input.id,
